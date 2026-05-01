@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rizzume</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon-wrap">⚡</div>
+      <div>
+        <div class="logo-text">Rizzume</div>
+        <div class="logo-sub">AI Resume Tailor</div>
+      </div>
+    </div>
+    <div class="header-badge">FREE</div>
+  </header>
+
+  <!-- Steps indicator -->
+  <div class="steps-track">
+    <div class="step-dot active" id="dot-1">1</div>
+    <div class="step-line"></div>
+    <div class="step-dot" id="dot-2">2</div>
+    <div class="step-line"></div>
+    <div class="step-dot" id="dot-3">3</div>
+  </div>
+
+  <main class="main">
+
+    <!-- Step 1: Upload Resume -->
+    <section class="card" id="section-upload">
+      <div class="card-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Your Resume
+      </div>
+
+      <div id="upload-area" class="upload-area" role="button" tabindex="0" aria-label="Upload resume">
+        <div class="upload-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </div>
+        <div class="upload-text" id="upload-text">
+          Drop PDF, DOCX, or TXT<br/>
+          <span class="upload-sub">or click to browse</span>
+        </div>
+        <input type="file" id="resume-file" accept=".pdf,.docx,.txt" style="display:none;" />
+      </div>
+
+      <div id="resume-status" class="status-badge hidden"></div>
+
+      <button class="btn btn-secondary" id="btn-upload" disabled>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>
+        Upload Resume
+      </button>
+    </section>
+
+    <!-- Step 2: Job Description -->
+    <section class="card" id="section-jd">
+      <div class="card-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        Job Description
+      </div>
+
+      <button class="btn btn-outline" id="btn-extract">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Extract from This Page
+      </button>
+
+      <div class="divider"><span>or paste manually</span></div>
+
+      <textarea
+        id="jd-text"
+        class="jd-textarea"
+        placeholder="Paste the full job description here…"
+        rows="5"
+      ></textarea>
+
+      <div class="row">
+        <div class="input-wrap">
+          <svg class="input-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="1"/></svg>
+          <input type="text" id="job-title" class="input-field" placeholder="Job Title (optional)" />
+        </div>
+        <div class="input-wrap">
+          <svg class="input-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <input type="text" id="company-name" class="input-field" placeholder="Company (optional)" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 3: Generate -->
+    <section class="card card-generate">
+      <button class="btn btn-primary" id="btn-generate" disabled>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Generate Tailored Resume
+      </button>
+      <p class="generate-hint">Upload resume + paste JD to unlock</p>
+    </section>
+
+    <!-- Results -->
+    <section class="card hidden" id="section-results">
+      <div class="result-header">
+        <span class="result-title">Results</span>
+        <span class="match-badge" id="match-score-badge">—</span>
+      </div>
+
+      <!-- Score ring + bar -->
+      <div class="score-block">
+        <div class="score-ring-wrap">
+          <svg class="score-ring" viewBox="0 0 80 80">
+            <circle class="ring-bg" cx="40" cy="40" r="34"/>
+            <circle class="ring-fill" id="ring-fill" cx="40" cy="40" r="34"
+              stroke-dasharray="213.6" stroke-dashoffset="213.6"/>
+          </svg>
+          <div class="score-center">
+            <div class="score-num" id="score-value">0</div>
+            <div class="score-pct">%</div>
+          </div>
+        </div>
+        <div class="score-right">
+          <div class="score-label">ATS Match Score</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar" id="score-bar"></div>
+          </div>
+          <div class="score-desc" id="score-desc">—</div>
+        </div>
+      </div>
+
+      <!-- Keywords -->
+      <div class="kw-section">
+        <div class="kw-label">
+          <span class="kw-dot matched"></span>Matched Keywords
+        </div>
+        <div class="kw-chips" id="matched-kw"></div>
+      </div>
+      <div class="kw-section">
+        <div class="kw-label">
+          <span class="kw-dot missing"></span>Missing Keywords
+        </div>
+        <div class="kw-chips missing" id="missing-kw"></div>
+      </div>
+
+      <!-- Actions -->
+      <div class="action-row">
+        <button class="btn btn-primary" id="btn-download">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download PDF
+        </button>
+        <button class="btn btn-glass" id="btn-cover">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 11.08V8l-6-6H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h6"/><path d="M14 3v5h5"/><path d="M18 21v-6"/><path d="M15 18h6"/></svg>
+          Cover Letter
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Cover Letter Modal -->
+  <div class="modal hidden" id="cover-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 11.08V8l-6-6H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h6"/><path d="M14 3v5h5"/></svg>
+          Cover Letter
+        </div>
+        <button class="modal-close" id="btn-modal-close" aria-label="Close">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <textarea class="modal-body" id="cover-letter-text" readonly></textarea>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="btn-copy-cover">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy to Clipboard
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay hidden" id="loading-overlay">
+    <div class="loading-inner">
+      <div class="loading-logo">⚡</div>
+      <div class="loading-spinner">
+        <div class="arc arc1"></div>
+        <div class="arc arc2"></div>
+        <div class="arc arc3"></div>
+      </div>
+      <div class="loading-text" id="loading-text">Processing…</div>
+      <div class="loading-sub">This takes 20-40 seconds</div>
+    </div>
+  </div>
+
+  <!-- Error Toast -->
+  <div class="toast hidden" id="error-toast">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span id="toast-msg"></span>
+  </div>
+
+<script src="popup.js"></script>
+</body>
+</html>

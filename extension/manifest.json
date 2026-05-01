@@ -1,0 +1,52 @@
+{
+  "manifest_version": 3,
+  "name": "Rizzume – AI Resume Tailor",
+  "version": "1.0.0",
+  "description": "Generate FAANG-style tailored resumes and cover letters in one click.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://localhost:8000/*",
+    "https://*.linkedin.com/*",
+    "https://*.indeed.com/*",
+    "https://*.greenhouse.io/*",
+    "https://*.lever.co/*",
+    "https://*.workday.com/*",
+    "https://*.jobs.ashbyhq.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.linkedin.com/jobs/*",
+        "https://*.indeed.com/viewjob*",
+        "https://*.greenhouse.io/jobs/*",
+        "https://*.lever.co/*",
+        "https://*.workday.com/*",
+        "https://*.jobs.ashbyhq.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
