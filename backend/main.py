@@ -228,3 +228,8 @@ async def delete_session(session_id: str):
         if path.exists():
             path.unlink()
     return {"message": "Session deleted."}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
