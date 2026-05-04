@@ -169,7 +169,19 @@ btnExtract.addEventListener("click", async () => {
       setDot(dot2, "done");
       updateGenerateBtn();
     } else {
-      showError("Couldn't detect a job description on this page. Try scrolling to the full JD first, or paste it manually.");
+      // Wait 2s for LinkedIn to finish rendering, then retry once
+      await new Promise(r => setTimeout(r, 2000));
+      const retry = await chrome.tabs.sendMessage(tab.id, { type: "EXTRACT_JD" }).catch(() => null);
+      if (retry?.jd && retry.jd.length > 100) {
+        jdTextarea.value = retry.jd;
+        jdTextarea.style.borderColor = "var(--success)";
+        if (retry.jobTitle) jobTitle.value = retry.jobTitle;
+        if (retry.company)  companyName.value = retry.company;
+        setDot(dot2, "done");
+        updateGenerateBtn();
+      } else {
+        showError("Couldn't detect a job description on this page. Try scrolling to the full JD first, or paste it manually.");
+      }
     }
   } catch (err) {
     showError(`Extraction error: ${err.message}`);

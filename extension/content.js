@@ -23,6 +23,14 @@
       "[data-test-id='job-details']",
       ".job-view-layout .jobs-description",
       ".scaffold-layout__detail .jobs-description",
+      // 2025 LinkedIn selectors
+      ".job-details-about-the-job-module__description",
+      ".jobs-unified-top-card__job-description",
+      "[data-job-id] .jobs-description",
+      ".artdeco-card .jobs-description",
+      ".job-details-module",
+      "[class*='job-details-about']",
+      "[class*='jobs-description']",
     ];
 
     for (const sel of selectors) {
@@ -58,14 +66,13 @@
     let bestScore = 0;
 
     for (const div of allDivs) {
-      // Skip tiny or deeply nested containers
-      if (div.children.length > 30) continue;
+      if (div.children.length > 60) continue;
       const text = div.innerText?.trim() || "";
-      if (text.length < 200 || text.length > 15000) continue;
+      if (text.length < 150 || text.length > 20000) continue;
 
       const lower = text.toLowerCase();
-      const score = JD_SIGNALS.filter(s => lower.includes(s)).length;
-      if (score >= 2 && text.length > bestScore) {
+      const sigCount = JD_SIGNALS.filter(s => lower.includes(s)).length;
+      if (sigCount >= 2 && text.length > bestScore) {
         best = text;
         bestScore = text.length;
       }
@@ -209,14 +216,24 @@
     }
   });
 
-  // ── Run on load + SPA observer ────────────────────────────
-  runExtraction();
+  // ── Run on load + retry until JD found ───────────────────
+  let retryCount = 0;
+  function runWithRetry() {
+    const result = runExtraction();
+    if (!result.jd && retryCount < 5) {
+      retryCount++;
+      setTimeout(runWithRetry, retryCount * 1000);
+    }
+  }
+  runWithRetry();
 
+  // ── SPA observer (URL change without full reload) ─────────
   let lastUrl = location.href;
   const observer = new MutationObserver(() => {
     if (location.href !== lastUrl) {
       lastUrl = location.href;
-      setTimeout(runExtraction, 1500);
+      retryCount = 0;
+      setTimeout(runWithRetry, 1500);
     }
   });
   observer.observe(document.body, { subtree: true, childList: true });
